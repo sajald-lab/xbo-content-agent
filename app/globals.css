@@ -1,2 +1,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fb; color: #1a1a2e; }
+body {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background: #F4F3F8;
+  color: #140533;
+}
+::selection { background: #E5DDF9; }
