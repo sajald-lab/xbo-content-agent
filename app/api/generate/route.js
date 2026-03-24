@@ -6,10 +6,9 @@ export var maxDuration = 60;
 export function POST(request) {
   return request.json().then(function(body) {
     var topic = body.topic || "";
-    if (!topic) {
-      return Response.json({ error: "No topic provided" }, { status: 400 });
-    }
-    return generateOnDemand(topic).then(function(data) {
+    var platforms = body.platforms || null;
+    if (!topic) return Response.json({ error: "No topic" }, { status: 400 });
+    return generateOnDemand(topic, platforms).then(function(data) {
       updatePosts(data.posts || []);
       return Response.json({ ok: true, posts: data.posts || [] });
     });
