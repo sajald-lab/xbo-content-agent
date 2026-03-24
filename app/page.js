@@ -2,52 +2,52 @@
 import { useState, useEffect } from "react";
 
 var PILLARS = ["Market Commentary", "Product Education", "Community/Memes", "Regulation", "LATAM/Football"];
-var PLATFORMS = ["X Twitter", "LinkedIn", "Telegram", "Instagram"];
 var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-export default function Dashboard() {
-  var s = {};
-  s.tab = useState("briefing");
-  s.data = useState(null);
-  s.loading = useState(false);
-  s.loadWhat = useState("");
-  s.err = useState(null);
-  s.copied = useState({});
-  s.genPosts = useState(null);
-  s.genLoading = useState(false);
-  s.searchQuery = useState("");
-  s.savedPosts = useState([]);
-  s.calendarPosts = useState({});
-  s.postedLog = useState([]);
-  s.editingIdx = useState(null);
-  s.editText = useState("");
-  s.replyInput = useState("");
-  s.replyResult = useState(null);
-  s.replyLoading = useState(false);
+var C = {
+  purple: "#6319FF", purple2: "#3B0F99", purple3: "#E5DDF9", purple4: "#CDC6ED",
+  purpleBg: "#F4F3F8", textH: "#270A66", textP: "#140533", button: "#140533",
+  green: "#49B47A", greenBg: "#E3F9F4", greenAcc: "#70E1C6",
+  blue: "#0092D0", blueBg: "#DCE9F4",
+  red: "#FD3B5E", redBg: "#FDEEEE",
+  grey: "#C4C4C4", white: "#FFFFFF"
+};
 
-  var tab = s.tab[0], setTab = s.tab[1];
-  var data = s.data[0], setData = s.data[1];
-  var loading = s.loading[0], setLoading = s.loading[1];
-  var loadWhat = s.loadWhat[0], setLoadWhat = s.loadWhat[1];
-  var err = s.err[0], setErr = s.err[1];
-  var copied = s.copied[0], setCopied = s.copied[1];
-  var genPosts = s.genPosts[0], setGenPosts = s.genPosts[1];
-  var genLoading = s.genLoading[0], setGenLoading = s.genLoading[1];
-  var searchQuery = s.searchQuery[0], setSearchQuery = s.searchQuery[1];
-  var savedPosts = s.savedPosts[0], setSavedPosts = s.savedPosts[1];
-  var calendarPosts = s.calendarPosts[0], setCalendarPosts = s.calendarPosts[1];
-  var postedLog = s.postedLog[0], setPostedLog = s.postedLog[1];
-  var editingIdx = s.editingIdx[0], setEditingIdx = s.editingIdx[1];
-  var editText = s.editText[0], setEditText = s.editText[1];
-  var replyInput = s.replyInput[0], setReplyInput = s.replyInput[1];
-  var replyResult = s.replyResult[0], setReplyResult = s.replyResult[1];
-  var replyLoading = s.replyLoading[0], setReplyLoading = s.replyLoading[1];
+var pillarColors = {
+  "Market Commentary": C.blue, "Product Education": C.green,
+  "Community/Memes": "#D97706", "Regulation": C.red, "LATAM/Football": C.purple
+};
+
+function platInfo(p) {
+  var k = (p || "").toLowerCase();
+  if (k.indexOf("twitter") >= 0 || k.indexOf("x ") >= 0 || k === "x") return { border: "#1d9bf0", bg: "#EBF5FF", icon: "X", label: "X / Twitter" };
+  if (k.indexOf("linkedin") >= 0) return { border: "#0a66c2", bg: "#EEF3FF", icon: "in", label: "LinkedIn" };
+  if (k.indexOf("telegram") >= 0) return { border: C.blue, bg: C.blueBg, icon: "TG", label: "Telegram" };
+  return { border: "#C13584", bg: "#FDF2F8", icon: "IG", label: "Instagram" };
+}
+
+export default function Dashboard() {
+  var _tab = useState("briefing"), tab = _tab[0], setTab = _tab[1];
+  var _data = useState(null), data = _data[0], setData = _data[1];
+  var _ld = useState(false), loading = _ld[0], setLoading = _ld[1];
+  var _lw = useState(""), loadWhat = _lw[0], setLoadWhat = _lw[1];
+  var _err = useState(null), err = _err[0], setErr = _err[1];
+  var _cp = useState({}), copied = _cp[0], setCopied = _cp[1];
+  var _gp = useState(null), genPosts = _gp[0], setGenPosts = _gp[1];
+  var _gl = useState(false), genLoading = _gl[0], setGenLoading = _gl[1];
+  var _sq = useState(""), searchQuery = _sq[0], setSearchQuery = _sq[1];
+  var _sp = useState([]), savedPosts = _sp[0], setSavedPosts = _sp[1];
+  var _cal = useState({}), calendarPosts = _cal[0], setCalendarPosts = _cal[1];
+  var _pl = useState([]), postedLog = _pl[0], setPostedLog = _pl[1];
+  var _ei = useState(null), editingIdx = _ei[0], setEditingIdx = _ei[1];
+  var _et = useState(""), editText = _et[0], setEditText = _et[1];
+  var _ri = useState(""), replyInput = _ri[0], setReplyInput = _ri[1];
+  var _rr = useState(null), replyResult = _rr[0], setReplyResult = _rr[1];
+  var _rl = useState(false), replyLoading = _rl[0], setReplyLoading = _rl[1];
 
   useEffect(function() { fetchData(); }, []);
 
-  function fetchData() {
-    fetch("/api/data").then(function(r) { return r.json(); }).then(function(d) { setData(d); }).catch(function() {});
-  }
+  function fetchData() { fetch("/api/data").then(function(r) { return r.json(); }).then(function(d) { setData(d); }).catch(function() {}); }
 
   function doRefresh(section) {
     setLoading(true); setLoadWhat(section); setErr(null);
@@ -60,42 +60,27 @@ export default function Dashboard() {
   function doSearch() {
     if (!searchQuery.trim()) return;
     setGenLoading(true); setGenPosts(null); setErr(null);
-    fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic: searchQuery })
-    }).then(function(r) { return r.json(); }).then(function(d) {
-      if (d.posts) { setGenPosts(d.posts); setTab("drafts"); fetchData(); }
-      else if (d.error) { setErr(d.error); }
+    fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: searchQuery }) })
+    .then(function(r) { return r.json(); }).then(function(d) {
+      if (d.posts) { setGenPosts(d.posts); setTab("drafts"); fetchData(); } else if (d.error) { setErr(d.error); }
       setGenLoading(false);
     }).catch(function() { setErr("Search failed"); setGenLoading(false); });
   }
 
   function doGenerateForTrend(trend) {
     setGenLoading(true); setGenPosts(null);
-    fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic: trend.title + " - " + trend.summary })
-    }).then(function(r) { return r.json(); }).then(function(d) {
-      if (d.posts) { setGenPosts(d.posts); setTab("drafts"); fetchData(); }
-      else if (d.error) { setErr(d.error); }
+    fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: trend.title + " - " + trend.summary }) })
+    .then(function(r) { return r.json(); }).then(function(d) {
+      if (d.posts) { setGenPosts(d.posts); setTab("drafts"); fetchData(); } else if (d.error) { setErr(d.error); }
       setGenLoading(false);
     }).catch(function() { setErr("Generation failed"); setGenLoading(false); });
   }
 
   function doRetone(post, tone) {
     setGenLoading(true);
-    fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic: "Rewrite this post in a " + tone + " tone for " + post.platform + ": " + post.content })
-    }).then(function(r) { return r.json(); }).then(function(d) {
-      if (d.posts && d.posts.length > 0) {
-        var updated = (genPosts || (data && data.posts) || []).slice();
-        var idx = updated.indexOf(post);
-        if (idx >= 0) { updated[idx] = d.posts[0]; setGenPosts(updated); }
-      }
+    fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: "Rewrite in " + tone + " tone for " + post.platform + ": " + post.content }) })
+    .then(function(r) { return r.json(); }).then(function(d) {
+      if (d.posts && d.posts.length > 0) { var u = (genPosts || (data && data.posts) || []).slice(); var idx = u.indexOf(post); if (idx >= 0) { u[idx] = d.posts[0]; setGenPosts(u); } }
       setGenLoading(false);
     }).catch(function() { setGenLoading(false); });
   }
@@ -103,798 +88,376 @@ export default function Dashboard() {
   function doReplyGenerate() {
     if (!replyInput.trim()) return;
     setReplyLoading(true); setReplyResult(null);
-    fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic: "Write a smart engaging reply from XBO.com perspective to this post: " + replyInput })
-    }).then(function(r) { return r.json(); }).then(function(d) {
-      if (d.posts) { setReplyResult(d.posts); }
-      else if (d.error) { setErr(d.error); }
-      setReplyLoading(false);
-    }).catch(function() { setReplyLoading(false); });
+    fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: "Write a smart reply from XBO.com to: " + replyInput }) })
+    .then(function(r) { return r.json(); }).then(function(d) { if (d.posts) { setReplyResult(d.posts); } setReplyLoading(false); })
+    .catch(function() { setReplyLoading(false); });
   }
 
-  function savePost(post, pillar) {
-    var newPost = Object.assign({}, post, { pillar: pillar || "Market Commentary", savedAt: new Date().toLocaleString() });
-    setSavedPosts(function(prev) { return prev.concat([newPost]); });
-  }
-
-  function addToCalendar(post, day) {
-    setCalendarPosts(function(prev) {
-      var updated = Object.assign({}, prev);
-      var list = (updated[day] || []).slice();
-      list.push(Object.assign({}, post, { scheduledDay: day }));
-      updated[day] = list;
-      return updated;
-    });
-  }
-
-  function markAsPosted(post) {
-    setPostedLog(function(prev) {
-      return prev.concat([Object.assign({}, post, { postedAt: new Date().toLocaleString() })]);
-    });
-  }
+  function savePost(post, pillar) { setSavedPosts(function(p) { return p.concat([Object.assign({}, post, { pillar: pillar, savedAt: new Date().toLocaleString() })]); }); }
+  function addToCalendar(post, day) { setCalendarPosts(function(p) { var u = Object.assign({}, p); u[day] = (u[day] || []).concat([Object.assign({}, post, { scheduledDay: day })]); return u; }); }
+  function markAsPosted(post) { setPostedLog(function(p) { return p.concat([Object.assign({}, post, { postedAt: new Date().toLocaleString() })]); }); }
 
   function copyText(text, idx) {
     navigator.clipboard.writeText(text).then(function() {
-      var o = {}; o[idx] = true;
-      setCopied(function(p) { return Object.assign({}, p, o); });
+      var o = {}; o[idx] = true; setCopied(function(p) { return Object.assign({}, p, o); });
       setTimeout(function() { var o2 = {}; o2[idx] = false; setCopied(function(p) { return Object.assign({}, p, o2); }); }, 2000);
     });
   }
 
-  function heatColor(h) {
-    if (h === "hot") return { bg: "#fee2e2", color: "#dc2626", label: "HOT" };
-    if (h === "rising") return { bg: "#fef9c3", color: "#ca8a04", label: "RISING" };
-    return { bg: "#ffedd5", color: "#ea580c", label: "WARM" };
+  function heatStyle(h) {
+    if (h === "hot") return { bg: C.redBg, color: C.red, label: "HOT" };
+    if (h === "rising") return { bg: "#FEF9C3", color: "#CA8A04", label: "RISING" };
+    return { bg: "#FFF3E0", color: "#EA580C", label: "WARM" };
   }
 
-  function platColor(p) {
-    var k = (p || "").toLowerCase();
-    if (k.indexOf("twitter") >= 0 || k.indexOf("x ") >= 0 || k === "x") return { border: "#1d9bf0", bg: "#f0f9ff", icon: "X", label: "X / Twitter" };
-    if (k.indexOf("linkedin") >= 0) return { border: "#0a66c2", bg: "#f0f4ff", icon: "in", label: "LinkedIn" };
-    if (k.indexOf("telegram") >= 0) return { border: "#229ed9", bg: "#f0faff", icon: "TG", label: "Telegram" };
-    return { border: "#e1306c", bg: "#fdf2f8", icon: "IG", label: "Instagram" };
-  }
-
-  function pillarColor(p) {
-    var colors = { "Market Commentary": "#2563eb", "Product Education": "#16a34a", "Community/Memes": "#d97706", "Regulation": "#dc2626", "LATAM/Football": "#7c3aed" };
-    return colors[p] || "#64748b";
-  }
-
-  // Styles
-  var page = { minHeight: "100vh", background: "#f8f9fb" };
-  var hdr = { background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 };
-  var logo = { width: 38, height: 38, borderRadius: 10, background: "linear-gradient(135deg, #0052ff, #00c6ff)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 16, color: "#fff" };
-  var ct = { maxWidth: 980, margin: "0 auto", padding: "24px 20px" };
-  var card = { background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, padding: 18, marginBottom: 12 };
-  var btnB = { padding: "8px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "#fff", background: "#0052ff", border: "none", cursor: "pointer" };
-  var btnG = { padding: "7px 14px", borderRadius: 8, fontSize: 12, fontWeight: 500, color: "#64748b", background: "#fff", border: "1px solid #e5e7eb", cursor: "pointer" };
-  var btnSm = { padding: "4px 10px", borderRadius: 6, fontSize: 10, fontWeight: 600, cursor: "pointer", border: "1px solid #e5e7eb", background: "#fff", color: "#64748b" };
+  // === STYLES ===
+  var sPage = { minHeight: "100vh", background: C.purpleBg };
+  var sHdr = { background: C.white, borderBottom: "1px solid " + C.purple4, padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 };
+  var sLogo = { width: 40, height: 40, borderRadius: 10, background: C.purple, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 17, color: C.white, letterSpacing: -1 };
+  var sCt = { maxWidth: 980, margin: "0 auto", padding: "24px 20px" };
+  var sCard = { background: C.white, border: "1px solid " + C.purple4, borderRadius: 14, padding: 20, marginBottom: 14 };
+  var sBtnPrimary = { padding: "10px 22px", borderRadius: 10, fontSize: 13, fontWeight: 600, color: C.white, background: C.purple, border: "none", cursor: "pointer" };
+  var sBtnGhost = { padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 500, color: C.textP, background: C.white, border: "1px solid " + C.purple4, cursor: "pointer" };
+  var sBtnSm = { padding: "4px 10px", borderRadius: 6, fontSize: 10, fontWeight: 600, cursor: "pointer", border: "1px solid " + C.purple4, background: C.white, color: C.textP };
 
   var TABS = [
-    { id: "briefing", label: "Briefing" },
-    { id: "drafts", label: "Drafts" },
-    { id: "saved", label: "Saved" },
-    { id: "calendar", label: "Calendar" },
-    { id: "competitors", label: "Competitors" },
-    { id: "replies", label: "Replies" },
+    { id: "briefing", label: "Briefing" }, { id: "drafts", label: "Drafts" },
+    { id: "saved", label: "Saved" }, { id: "calendar", label: "Calendar" },
+    { id: "competitors", label: "Competitors" }, { id: "replies", label: "Replies" },
     { id: "tracker", label: "Tracker" }
   ];
 
+  // === HEADER ===
   var header = (
-    <div style={hdr}>
+    <div style={sHdr}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={logo}>X</div>
+        <div style={sLogo}>xbo</div>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#0f172a" }}>XBO.com Content Agent</div>
-          <div style={{ fontSize: 11, color: "#64748b" }}>
-            <span style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: data && data.lastUpdate ? "#22c55e" : "#94a3b8", marginRight: 5, verticalAlign: "middle" }}></span>
+          <div style={{ fontSize: 16, fontWeight: 700, color: C.textH }}>Content Command Center</div>
+          <div style={{ fontSize: 11, color: C.purple2 }}>
+            <span style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: data && data.lastUpdate ? C.green : C.grey, marginRight: 5, verticalAlign: "middle" }}></span>
             {data && data.lastUpdate ? "Updated " + new Date(data.lastUpdate).toLocaleTimeString() : "Not scanned yet"}
           </div>
         </div>
       </div>
-      <button disabled={loading} onClick={function() { doRefresh("all"); }} style={Object.assign({}, btnB, loading ? { opacity: 0.5 } : {})}>
-        {loading && loadWhat === "all" ? "Scanning..." : "Refresh All"}
-      </button>
+      <button disabled={loading} onClick={function() { doRefresh("all"); }} style={Object.assign({}, sBtnPrimary, loading ? { opacity: 0.5 } : {})}>{loading && loadWhat === "all" ? "Scanning..." : "Refresh All"}</button>
     </div>
   );
 
+  // === TAB BAR ===
   var tabBar = (
-    <div style={{ display: "flex", background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "0 24px", overflowX: "auto" }}>
+    <div style={{ display: "flex", background: C.white, borderBottom: "1px solid " + C.purple4, padding: "0 24px", overflowX: "auto" }}>
       {TABS.map(function(t) {
         var active = tab === t.id;
-        return (
-          <div key={t.id} onClick={function() { setTab(t.id); }} style={{
-            padding: "12px 16px", fontSize: 13, fontWeight: active ? 600 : 500, whiteSpace: "nowrap",
-            color: active ? "#0052ff" : "#64748b",
-            borderBottom: active ? "2px solid #0052ff" : "2px solid transparent", cursor: "pointer"
-          }}>{t.label}{t.id === "saved" && savedPosts.length > 0 ? " (" + savedPosts.length + ")" : ""}</div>
-        );
+        return (<div key={t.id} onClick={function() { setTab(t.id); }} style={{
+          padding: "12px 16px", fontSize: 13, fontWeight: active ? 600 : 500, whiteSpace: "nowrap",
+          color: active ? C.purple : C.textP + "99",
+          borderBottom: active ? "2px solid " + C.purple : "2px solid transparent", cursor: "pointer"
+        }}>{t.label}{t.id === "saved" && savedPosts.length > 0 ? " (" + savedPosts.length + ")" : ""}</div>);
       })}
     </div>
   );
 
-  var errBox = err ? <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, padding: 14, fontSize: 13, color: "#dc2626", margin: "16px 0" }}>{err}</div> : null;
+  var errBox = err ? <div style={{ background: C.redBg, border: "1px solid " + C.red + "40", borderRadius: 10, padding: 14, fontSize: 13, color: C.red, margin: "16px 0" }}>{err}</div> : null;
 
-  // Search bar component
+  // === SEARCH BAR ===
   var searchBar = (
-    <div style={Object.assign({}, card, { display: "flex", gap: 8, alignItems: "center", padding: 14 })}>
-      <input value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }}
-        onKeyDown={function(e) { if (e.key === "Enter") doSearch(); }}
-        placeholder="Search any topic... (e.g. Bitcoin ETF, Solana memecoins, Argentina crypto)"
-        style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#0f172a", outline: "none" }} />
-      <button disabled={genLoading} onClick={doSearch} style={Object.assign({}, btnB, { whiteSpace: "nowrap" }, genLoading ? { opacity: 0.5 } : {})}>
-        {genLoading ? "Searching..." : "Search + Generate"}
-      </button>
+    <div style={Object.assign({}, sCard, { display: "flex", gap: 8, alignItems: "center", padding: 14 })}>
+      <input value={searchQuery} onChange={function(e) { setSearchQuery(e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") doSearch(); }}
+        placeholder="Search any topic... (Bitcoin ETF, Solana memecoins, Argentina crypto)"
+        style={{ flex: 1, border: "1px solid " + C.purple4, borderRadius: 10, padding: "10px 14px", fontSize: 13, color: C.textP, outline: "none", fontFamily: "inherit" }} />
+      <button disabled={genLoading} onClick={doSearch} style={Object.assign({}, sBtnPrimary, { whiteSpace: "nowrap" }, genLoading ? { opacity: 0.5 } : {})}>{genLoading ? "Searching..." : "Search + Generate"}</button>
     </div>
   );
 
-  // Post card with editing, saving, pillar tagging
+  // === POST CARD ===
   function renderPostCard(post, i, prefix) {
     var idx = prefix + "-" + i;
     var isCp = copied[idx] === true;
-    var isEditing = editingIdx === idx;
-    var pc = platColor(post.platform);
+    var isEd = editingIdx === idx;
+    var pc = platInfo(post.platform);
+    var plr = post.pillar;
 
     return (
-      <div key={idx} style={{ background: "#fff", borderLeft: "3px solid " + pc.border, borderRadius: "0 10px 10px 0", border: "1px solid #e5e7eb", borderLeftColor: pc.border, borderLeftWidth: 3, padding: 16, marginBottom: 8 }}>
+      <div key={idx} style={{ background: C.white, borderLeft: "3px solid " + pc.border, borderRadius: "0 12px 12px 0", border: "1px solid " + C.purple4, borderLeftColor: pc.border, borderLeftWidth: 3, padding: 16, marginBottom: 10 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, flexWrap: "wrap", gap: 4 }}>
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            <span style={{ fontSize: 11, fontWeight: 500, color: "#94a3b8", background: "#f1f5f9", padding: "2px 8px", borderRadius: 4 }}>{post.tone}</span>
-            <span style={{ fontSize: 10, color: pc.border, fontWeight: 600 }}>{pc.label}</span>
-            {post.pillar ? <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: pillarColor(post.pillar) + "15", color: pillarColor(post.pillar), fontWeight: 600 }}>{post.pillar}</span> : null}
+            <span style={{ fontSize: 11, fontWeight: 600, color: pc.border }}>{pc.label}</span>
+            <span style={{ fontSize: 10, color: C.textP + "80", background: C.purpleBg, padding: "2px 8px", borderRadius: 4 }}>{post.tone}</span>
+            {plr ? <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: (pillarColors[plr] || C.grey) + "18", color: pillarColors[plr] || C.grey, fontWeight: 600 }}>{plr}</span> : null}
           </div>
           <div style={{ display: "flex", gap: 4 }}>
-            <button onClick={function() { copyText(isEditing ? editText : post.content, idx); }}
-              style={Object.assign({}, btnSm, isCp ? { background: "#059669", color: "#fff", borderColor: "#059669" } : {})}>
-              {isCp ? "Copied!" : "Copy"}
-            </button>
-            <button onClick={function() { if (isEditing) { post.content = editText; setEditingIdx(null); } else { setEditingIdx(idx); setEditText(post.content); } }}
-              style={btnSm}>{isEditing ? "Save Edit" : "Edit"}</button>
+            <button onClick={function() { copyText(isEd ? editText : post.content, idx); }} style={Object.assign({}, sBtnSm, isCp ? { background: C.green, color: C.white, borderColor: C.green } : {})}>{isCp ? "Copied!" : "Copy"}</button>
+            <button onClick={function() { if (isEd) { post.content = editText; setEditingIdx(null); } else { setEditingIdx(idx); setEditText(post.content); } }} style={sBtnSm}>{isEd ? "Save" : "Edit"}</button>
           </div>
         </div>
 
-        {isEditing ? (
+        {isEd ? (
           <textarea value={editText} onChange={function(e) { setEditText(e.target.value); }}
-            style={{ width: "100%", border: "1px solid #bfdbfe", borderRadius: 8, padding: 10, fontSize: 13, color: "#1e293b", lineHeight: 1.6, minHeight: 80, fontFamily: "inherit", resize: "vertical" }} />
+            style={{ width: "100%", border: "1px solid " + C.purple3, borderRadius: 10, padding: 12, fontSize: 13, color: C.textP, lineHeight: 1.6, minHeight: 80, fontFamily: "inherit", resize: "vertical" }} />
         ) : (
-          <div style={{ fontSize: 14, color: "#1e293b", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{post.content}</div>
+          <div style={{ fontSize: 14, color: C.textP, whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{post.content}</div>
         )}
 
         {(post.hashtags || []).length > 0 ? (
           <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
-            {post.hashtags.map(function(h, j) { return <span key={j} style={{ fontSize: 11, color: "#0052ff", background: "#eff6ff", padding: "2px 6px", borderRadius: 4 }}>#{h}</span>; })}
+            {post.hashtags.map(function(h, j) { return <span key={j} style={{ fontSize: 11, color: C.purple, background: C.purple3, padding: "2px 6px", borderRadius: 4 }}>#{h}</span>; })}
           </div>
         ) : null}
 
-        {post.engagement_tip ? (
-          <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 8, fontStyle: "italic", background: "#f8fafc", padding: "6px 10px", borderRadius: 6 }}>Tip: {post.engagement_tip}</div>
-        ) : null}
+        {post.engagement_tip ? <div style={{ fontSize: 12, color: C.textP + "80", marginTop: 8, fontStyle: "italic", background: C.purpleBg, padding: "6px 10px", borderRadius: 8 }}>Tip: {post.engagement_tip}</div> : null}
 
-        {/* Action buttons */}
         <div style={{ display: "flex", gap: 4, marginTop: 10, flexWrap: "wrap" }}>
-          <button onClick={function() { doRetone(post, "professional"); }} style={btnSm} disabled={genLoading}>Professional</button>
-          <button onClick={function() { doRetone(post, "casual and funny"); }} style={btnSm} disabled={genLoading}>Casual</button>
-          <button onClick={function() { doRetone(post, "bold hot take"); }} style={btnSm} disabled={genLoading}>Spicy</button>
-          <span style={{ width: 1, background: "#e5e7eb", margin: "0 4px" }}></span>
-          {PILLARS.map(function(p) {
-            return <button key={p} onClick={function() { savePost(post, p); }} style={Object.assign({}, btnSm, { color: pillarColor(p), borderColor: pillarColor(p) + "40" })}>{p}</button>;
-          })}
-          <span style={{ width: 1, background: "#e5e7eb", margin: "0 4px" }}></span>
-          {DAYS.slice(0, 5).map(function(d) {
-            return <button key={d} onClick={function() { addToCalendar(post, d); }} style={Object.assign({}, btnSm, { fontSize: 9 })}>{d.substring(0, 3)}</button>;
-          })}
+          <button onClick={function() { doRetone(post, "professional"); }} style={Object.assign({}, sBtnSm, { color: C.purple2 })} disabled={genLoading}>Professional</button>
+          <button onClick={function() { doRetone(post, "casual funny"); }} style={Object.assign({}, sBtnSm, { color: C.blue })} disabled={genLoading}>Casual</button>
+          <button onClick={function() { doRetone(post, "bold hot take"); }} style={Object.assign({}, sBtnSm, { color: C.red })} disabled={genLoading}>Spicy</button>
+          <span style={{ width: 1, background: C.purple4, margin: "0 2px" }}></span>
+          {PILLARS.map(function(p) { return <button key={p} onClick={function() { savePost(post, p); }} style={Object.assign({}, sBtnSm, { color: pillarColors[p], borderColor: (pillarColors[p] || C.grey) + "40", fontSize: 9 })}>{p}</button>; })}
+          <span style={{ width: 1, background: C.purple4, margin: "0 2px" }}></span>
+          {DAYS.slice(0, 5).map(function(d) { return <button key={d} onClick={function() { addToCalendar(post, d); }} style={Object.assign({}, sBtnSm, { fontSize: 9, color: C.purple2 })}>{d.substring(0, 3)}</button>; })}
         </div>
       </div>
     );
   }
 
-  // ===== BRIEFING =====
+  // === BRIEFING ===
   if (tab === "briefing") {
     var trends = data && data.trends ? data.trends : [];
     return (
-      <div style={page}>{header}{tabBar}
-        <div style={ct}>
-          {searchBar}
-          {data && data.lastUpdate ? (
-            <div style={{ background: "linear-gradient(135deg, #0052ff, #00c6ff)", borderRadius: 14, padding: "20px 24px", marginBottom: 20, color: "#fff" }}>
-              <div style={{ fontSize: 12, fontWeight: 500, opacity: 0.8, marginBottom: 4 }}>MARKET MOOD</div>
-              <div style={{ fontSize: 16, fontWeight: 600 }}>{data.market_mood || "Analyzing..."}</div>
-            </div>
-          ) : (
-            <div style={Object.assign({}, card, { padding: 40, textAlign: "center" })}>
-              <div style={{ fontSize: 18, fontWeight: 600, color: "#0f172a", marginBottom: 8 }}>Welcome to your Content Command Center</div>
-              <div style={{ fontSize: 14, color: "#64748b", marginBottom: 20 }}>Click Refresh All to scan crypto trends, or search any topic above.</div>
-              <button disabled={loading} onClick={function() { doRefresh("all"); }} style={btnB}>{loading ? "Scanning..." : "Run First Scan"}</button>
-            </div>
-          )}
-          {errBox}
-          {trends.length > 0 && (
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", marginBottom: 12 }}>Trending Now ({trends.length})</div>
-              {trends.map(function(t, i) {
-                var hc = heatColor(t.heat);
-                return (
-                  <div key={i} style={card}>
-                    <div style={{ display: "flex", alignItems: "start", justifyContent: "space-between", gap: 12 }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: hc.bg, color: hc.color }}>{hc.label}</span>
-                          <span style={{ fontSize: 11, color: "#94a3b8" }}>{t.category}</span>
-                        </div>
-                        <div style={{ fontSize: 15, fontWeight: 600, color: "#0f172a", marginBottom: 4 }}>{t.title}</div>
-                        <div style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5 }}>{t.summary}</div>
-                      </div>
-                      <button disabled={genLoading} onClick={function() { doGenerateForTrend(t); }}
-                        style={{ padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600, color: "#0052ff", background: "#eff6ff", border: "1px solid #bfdbfe", cursor: "pointer", whiteSpace: "nowrap" }}>
-                        {genLoading ? "..." : "Generate Posts"}
-                      </button>
+      <div style={sPage}>{header}{tabBar}<div style={sCt}>
+        {searchBar}
+        {data && data.lastUpdate ? (
+          <div style={{ background: "linear-gradient(135deg, " + C.purple + ", " + C.purple2 + ")", borderRadius: 16, padding: "22px 26px", marginBottom: 22, color: C.white }}>
+            <div style={{ fontSize: 11, fontWeight: 500, opacity: 0.7, marginBottom: 4, letterSpacing: 1, textTransform: "uppercase" }}>Market Mood</div>
+            <div style={{ fontSize: 17, fontWeight: 600 }}>{data.market_mood || "Analyzing..."}</div>
+          </div>
+        ) : (
+          <div style={Object.assign({}, sCard, { padding: 48, textAlign: "center" })}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: C.textH, marginBottom: 8 }}>Welcome to your Content Command Center</div>
+            <div style={{ fontSize: 14, color: C.textP + "90", marginBottom: 24 }}>Click Refresh All to scan crypto trends, or search any topic above.</div>
+            <button disabled={loading} onClick={function() { doRefresh("all"); }} style={sBtnPrimary}>{loading ? "Scanning..." : "Run First Scan"}</button>
+          </div>
+        )}
+        {errBox}
+        {trends.length > 0 && (<div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.textH, marginBottom: 14 }}>Trending Now ({trends.length})</div>
+          {trends.map(function(t, i) {
+            var hc = heatStyle(t.heat);
+            return (
+              <div key={i} style={sCard}>
+                <div style={{ display: "flex", alignItems: "start", justifyContent: "space-between", gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: hc.bg, color: hc.color }}>{hc.label}</span>
+                      <span style={{ fontSize: 11, color: C.textP + "70" }}>{t.category}</span>
                     </div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: C.textH, marginBottom: 4 }}>{t.title}</div>
+                    <div style={{ fontSize: 13, color: C.textP + "90", lineHeight: 1.55 }}>{t.summary}</div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
+                  <button disabled={genLoading} onClick={function() { doGenerateForTrend(t); }}
+                    style={{ padding: "10px 18px", borderRadius: 10, fontSize: 12, fontWeight: 600, color: C.purple, background: C.purple3, border: "1px solid " + C.purple4, cursor: "pointer", whiteSpace: "nowrap" }}>
+                    {genLoading ? "..." : "Generate Posts"}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>)}
+      </div></div>
     );
   }
 
-  // ===== DRAFTS =====
+  // === DRAFTS ===
   if (tab === "drafts") {
     var allPosts = genPosts || (data && data.posts) || [];
     return (
-      <div style={page}>{header}{tabBar}
-        <div style={ct}>
-          {searchBar}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>Drafts ({allPosts.length})</div>
-            <button disabled={loading} onClick={function() { doRefresh("posts"); }} style={btnG}>Regenerate</button>
-          </div>
-          {errBox}
-          {allPosts.length === 0 ? <div style={Object.assign({}, card, { textAlign: "center", color: "#94a3b8", fontSize: 13, padding: 30 })}>No drafts yet. Search a topic or refresh trends.</div> : null}
-          {allPosts.map(function(post, i) { return renderPostCard(post, i, "draft"); })}
+      <div style={sPage}>{header}{tabBar}<div style={sCt}>
+        {searchBar}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.textH }}>Drafts ({allPosts.length})</div>
+          <button disabled={loading} onClick={function() { doRefresh("posts"); }} style={sBtnGhost}>{loading && loadWhat === "posts" ? "Generating..." : "Regenerate"}</button>
         </div>
-      </div>
+        {errBox}
+        {allPosts.length === 0 ? <div style={Object.assign({}, sCard, { textAlign: "center", color: C.textP + "70", fontSize: 13, padding: 36 })}>No drafts yet. Search a topic or refresh trends.</div> : null}
+        {allPosts.map(function(post, i) { return renderPostCard(post, i, "draft"); })}
+      </div></div>
     );
   }
 
-  // ===== SAVED LIBRARY =====
+  // === SAVED ===
   if (tab === "saved") {
     var grouped = {};
-    for (var i = 0; i < savedPosts.length; i++) {
-      var p = savedPosts[i].pillar || "Uncategorized";
-      if (!grouped[p]) grouped[p] = [];
-      grouped[p].push(savedPosts[i]);
-    }
+    for (var i = 0; i < savedPosts.length; i++) { var p = savedPosts[i].pillar || "Uncategorized"; if (!grouped[p]) grouped[p] = []; grouped[p].push(savedPosts[i]); }
     return (
-      <div style={page}>{header}{tabBar}
-        <div style={ct}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>Saved Posts ({savedPosts.length})</div>
-            {savedPosts.length > 0 ? <button onClick={function() { setSavedPosts([]); }} style={btnG}>Clear All</button> : null}
-          </div>
-          {savedPosts.length === 0 ? <div style={Object.assign({}, card, { textAlign: "center", color: "#94a3b8", fontSize: 13, padding: 30 })}>No saved posts yet. Save posts from Drafts using the content pillar buttons.</div> : null}
-          {PILLARS.map(function(pillar) {
-            var posts = grouped[pillar] || [];
-            if (posts.length === 0) return null;
-            return (
-              <div key={pillar} style={{ marginBottom: 20 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ width: 12, height: 12, borderRadius: 3, background: pillarColor(pillar) }}></span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{pillar} ({posts.length})</span>
-                </div>
-                {posts.map(function(post, j) { return renderPostCard(post, j, "saved-" + pillar); })}
-              </div>
-            );
-          })}
+      <div style={sPage}>{header}{tabBar}<div style={sCt}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.textH }}>Saved Posts ({savedPosts.length})</div>
+          {savedPosts.length > 0 ? <button onClick={function() { setSavedPosts([]); }} style={sBtnGhost}>Clear All</button> : null}
         </div>
-      </div>
+        {savedPosts.length === 0 ? <div style={Object.assign({}, sCard, { textAlign: "center", color: C.textP + "70", fontSize: 13, padding: 36 })}>Save posts from Drafts using the pillar buttons.</div> : null}
+        {PILLARS.map(function(pillar) {
+          var posts = grouped[pillar] || []; if (posts.length === 0) return null;
+          return (<div key={pillar} style={{ marginBottom: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+              <span style={{ width: 14, height: 14, borderRadius: 4, background: pillarColors[pillar] }}></span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: C.textH }}>{pillar} ({posts.length})</span>
+            </div>
+            {posts.map(function(post, j) { return renderPostCard(post, j, "saved-" + pillar); })}
+          </div>);
+        })}
+      </div></div>
     );
   }
 
-  // ===== CALENDAR =====
+  // === CALENDAR ===
   if (tab === "calendar") {
     return (
-      <div style={page}>{header}{tabBar}
-        <div style={ct}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>Weekly Content Calendar</div>
-            <button disabled={loading} onClick={function() { doRefresh("calendar"); }} style={btnG}>
-              {loading && loadWhat === "calendar" ? "Planning..." : "Auto-Generate Week"}
-            </button>
-          </div>
-          {errBox}
-          {DAYS.map(function(day) {
-            var posts = calendarPosts[day] || [];
-            var aiPosts = (data && data.calendar || []).filter(function(p) { return (p.scheduledDay || "") === day; });
-            var all = posts.concat(aiPosts);
-            return (
-              <div key={day} style={Object.assign({}, card, { padding: 14 })}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: all.length > 0 ? 10 : 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>{day}</div>
-                  <span style={{ fontSize: 11, color: "#94a3b8" }}>{all.length} post{all.length !== 1 ? "s" : ""}</span>
-                </div>
-                {all.map(function(post, j) {
-                  var pc = platColor(post.platform);
-                  return (
-                    <div key={j} style={{ background: "#f8fafc", borderRadius: 8, padding: 10, marginBottom: 6, borderLeft: "3px solid " + pc.border }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color: pc.border }}>{pc.label}</span>
-                          {post.time ? <span style={{ fontSize: 10, color: "#94a3b8" }}>{post.time}</span> : null}
-                          {post.pillar ? <span style={{ fontSize: 9, color: pillarColor(post.pillar), fontWeight: 600 }}>{post.pillar}</span> : null}
-                        </div>
-                        <div style={{ display: "flex", gap: 4 }}>
-                          <button onClick={function() { copyText(post.content, "cal-" + day + "-" + j); }}
-                            style={Object.assign({}, btnSm, copied["cal-" + day + "-" + j] ? { background: "#059669", color: "#fff" } : {})}>
-                            {copied["cal-" + day + "-" + j] ? "Copied!" : "Copy"}
-                          </button>
-                          <button onClick={function() { markAsPosted(post); }} style={Object.assign({}, btnSm, { color: "#16a34a", borderColor: "#bbf7d0" })}>Posted</button>
-                        </div>
-                      </div>
-                      <div style={{ fontSize: 12, color: "#1e293b", lineHeight: 1.5 }}>{post.content}</div>
-                    </div>
-                  );
-                })}
-                {all.length === 0 ? <div style={{ fontSize: 12, color: "#cbd5e1", fontStyle: "italic" }}>Drag posts here from Drafts or Saved</div> : null}
-              </div>
-            );
-          })}
+      <div style={sPage}>{header}{tabBar}<div style={sCt}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.textH }}>Weekly Content Calendar</div>
+          <button disabled={loading} onClick={function() { doRefresh("calendar"); }} style={sBtnGhost}>{loading && loadWhat === "calendar" ? "Planning..." : "Auto-Generate"}</button>
         </div>
-      </div>
+        {errBox}
+        {DAYS.map(function(day) {
+          var posts = calendarPosts[day] || [];
+          return (<div key={day} style={Object.assign({}, sCard, { padding: 16 })}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: posts.length > 0 ? 10 : 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: C.textH }}>{day}</div>
+              <span style={{ fontSize: 11, color: C.textP + "60" }}>{posts.length} post{posts.length !== 1 ? "s" : ""}</span>
+            </div>
+            {posts.map(function(post, j) {
+              var pc = platInfo(post.platform);
+              return (<div key={j} style={{ background: C.purpleBg, borderRadius: 10, padding: 12, marginBottom: 6, borderLeft: "3px solid " + pc.border }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: pc.border }}>{pc.label}</span>
+                    {post.pillar ? <span style={{ fontSize: 9, color: pillarColors[post.pillar], fontWeight: 600 }}>{post.pillar}</span> : null}
+                  </div>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    <button onClick={function() { copyText(post.content, "c-" + day + "-" + j); }} style={Object.assign({}, sBtnSm, copied["c-" + day + "-" + j] ? { background: C.green, color: C.white } : {})}>{copied["c-" + day + "-" + j] ? "Copied!" : "Copy"}</button>
+                    <button onClick={function() { markAsPosted(post); }} style={Object.assign({}, sBtnSm, { color: C.green, borderColor: C.green + "40" })}>Posted</button>
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, color: C.textP, lineHeight: 1.5 }}>{post.content}</div>
+              </div>);
+            })}
+            {posts.length === 0 ? <div style={{ fontSize: 12, color: C.textP + "40", fontStyle: "italic" }}>Add posts from Drafts using the day buttons</div> : null}
+          </div>);
+        })}
+      </div></div>
     );
   }
 
-  // ===== COMPETITORS =====
+  // === COMPETITORS ===
   if (tab === "competitors") {
     var comps = (data && data.competitors) || [];
     return (
-      <div style={page}>{header}{tabBar}
-        <div style={ct}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>Competitor Intelligence</div>
-            <button disabled={loading} onClick={function() { doRefresh("competitors"); }} style={btnG}>
-              {loading && loadWhat === "competitors" ? "Analyzing..." : "Refresh"}
-            </button>
-          </div>
-          {errBox}
-          {comps.length === 0 ? <div style={Object.assign({}, card, { textAlign: "center", color: "#94a3b8", fontSize: 13, padding: 30 })}>Click Refresh to analyze competitors.</div> : null}
-          {comps.map(function(c, i) {
-            return (
-              <div key={i} style={card}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#0f172a", marginBottom: 10 }}>{c.name}</div>
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", marginBottom: 2 }}>RECENT MOVES</div>
-                  <div style={{ fontSize: 13, color: "#475569", lineHeight: 1.5 }}>{c.recent_moves}</div>
-                </div>
-                <div style={{ background: "#eff6ff", borderRadius: 8, padding: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "#0052ff", marginBottom: 2 }}>OPPORTUNITY FOR XBO</div>
-                  <div style={{ fontSize: 13, color: "#1e40af", lineHeight: 1.5 }}>{c.opportunity}</div>
-                </div>
-              </div>
-            );
-          })}
+      <div style={sPage}>{header}{tabBar}<div style={sCt}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.textH }}>Competitor Intelligence</div>
+          <button disabled={loading} onClick={function() { doRefresh("competitors"); }} style={sBtnGhost}>{loading && loadWhat === "competitors" ? "Analyzing..." : "Refresh"}</button>
         </div>
-      </div>
+        {errBox}
+        {comps.length === 0 ? <div style={Object.assign({}, sCard, { textAlign: "center", color: C.textP + "70", fontSize: 13, padding: 36 })}>Click Refresh to analyze competitors.</div> : null}
+        {comps.map(function(c, i) {
+          return (<div key={i} style={sCard}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: C.textH, marginBottom: 12 }}>{c.name}</div>
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.textP + "60", marginBottom: 2, letterSpacing: 0.5, textTransform: "uppercase" }}>Recent Moves</div>
+              <div style={{ fontSize: 13, color: C.textP + "CC", lineHeight: 1.55 }}>{c.recent_moves}</div>
+            </div>
+            <div style={{ background: C.purple3, borderRadius: 10, padding: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.purple, marginBottom: 2, letterSpacing: 0.5, textTransform: "uppercase" }}>Opportunity for XBO</div>
+              <div style={{ fontSize: 13, color: C.purple2, lineHeight: 1.55 }}>{c.opportunity}</div>
+            </div>
+          </div>);
+        })}
+      </div></div>
     );
   }
 
-  // ===== ENGAGEMENT REPLIES =====
+  // === REPLIES ===
   if (tab === "replies") {
     return (
-      <div style={page}>{header}{tabBar}
-        <div style={ct}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", marginBottom: 12 }}>Engagement Reply Generator</div>
-          <div style={Object.assign({}, card, { padding: 16 })}>
-            <div style={{ fontSize: 13, color: "#64748b", marginBottom: 10 }}>Paste a tweet, post, or topic and generate a smart reply from XBO.com's perspective.</div>
-            <textarea value={replyInput} onChange={function(e) { setReplyInput(e.target.value); }}
-              placeholder="Paste the tweet or describe the conversation you want to reply to..."
-              style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 8, padding: 12, fontSize: 13, minHeight: 80, fontFamily: "inherit", resize: "vertical", marginBottom: 10 }} />
-            <button disabled={replyLoading} onClick={doReplyGenerate} style={Object.assign({}, btnB, replyLoading ? { opacity: 0.5 } : {})}>
-              {replyLoading ? "Generating..." : "Generate Reply"}
-            </button>
-          </div>
-          {errBox}
-          {replyResult ? (
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", margin: "16px 0 8px" }}>Suggested Replies</div>
-              {replyResult.map(function(r, i) { return renderPostCard(r, i, "reply"); })}
-            </div>
-          ) : null}
+      <div style={sPage}>{header}{tabBar}<div style={sCt}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: C.textH, marginBottom: 14 }}>Engagement Reply Generator</div>
+        <div style={Object.assign({}, sCard, { padding: 18 })}>
+          <div style={{ fontSize: 13, color: C.textP + "80", marginBottom: 12 }}>Paste a tweet or topic and generate a smart reply from XBO.com.</div>
+          <textarea value={replyInput} onChange={function(e) { setReplyInput(e.target.value); }} placeholder="Paste the tweet or describe the conversation..."
+            style={{ width: "100%", border: "1px solid " + C.purple4, borderRadius: 10, padding: 14, fontSize: 13, minHeight: 80, fontFamily: "inherit", resize: "vertical", marginBottom: 12, color: C.textP }} />
+          <button disabled={replyLoading} onClick={doReplyGenerate} style={Object.assign({}, sBtnPrimary, replyLoading ? { opacity: 0.5 } : {})}>{replyLoading ? "Generating..." : "Generate Reply"}</button>
         </div>
-      </div>
+        {errBox}
+        {replyResult ? (<div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: C.textH, margin: "18px 0 10px" }}>Suggested Replies</div>
+          {replyResult.map(function(r, i) { return renderPostCard(r, i, "reply"); })}
+        </div>) : null}
+      </div></div>
     );
   }
 
-  // ===== PERFORMANCE TRACKER =====
+  // === TRACKER ===
   if (tab === "tracker") {
-    var byPlatform = {};
-    var byPillar = {};
-    for (var i = 0; i < postedLog.length; i++) {
-      var p = postedLog[i].platform || "Unknown";
-      var pl = postedLog[i].pillar || "Untagged";
-      byPlatform[p] = (byPlatform[p] || 0) + 1;
-      byPillar[pl] = (byPillar[pl] || 0) + 1;
-    }
+    var byPlat = {}, byPil = {};
+    for (var i = 0; i < postedLog.length; i++) { var p = postedLog[i].platform || "Unknown"; var pl = postedLog[i].pillar || "Untagged"; byPlat[p] = (byPlat[p] || 0) + 1; byPil[pl] = (byPil[pl] || 0) + 1; }
     return (
-      <div style={page}>{header}{tabBar}
-        <div style={ct}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", marginBottom: 16 }}>Performance Tracker</div>
-
-          {/* Stats */}
-          <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
-            <div style={Object.assign({}, card, { flex: 1, minWidth: 140, textAlign: "center" })}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "#0052ff" }}>{postedLog.length}</div>
-              <div style={{ fontSize: 12, color: "#64748b" }}>Posts Published</div>
-            </div>
-            <div style={Object.assign({}, card, { flex: 1, minWidth: 140, textAlign: "center" })}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "#16a34a" }}>{savedPosts.length}</div>
-              <div style={{ fontSize: 12, color: "#64748b" }}>Posts Saved</div>
-            </div>
-            <div style={Object.assign({}, card, { flex: 1, minWidth: 140, textAlign: "center" })}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "#d97706" }}>{Object.keys(byPlatform).length}</div>
-              <div style={{ fontSize: 12, color: "#64748b" }}>Platforms Active</div>
-            </div>
+      <div style={sPage}>{header}{tabBar}<div style={sCt}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: C.textH, marginBottom: 16 }}>Performance Tracker</div>
+        <div style={{ display: "flex", gap: 14, marginBottom: 22, flexWrap: "wrap" }}>
+          <div style={Object.assign({}, sCard, { flex: 1, minWidth: 140, textAlign: "center", padding: 24 })}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: C.purple }}>{postedLog.length}</div>
+            <div style={{ fontSize: 12, color: C.textP + "80" }}>Posts Published</div>
           </div>
-
-          {/* By Platform */}
-          {Object.keys(byPlatform).length > 0 ? (
-            <div style={Object.assign({}, card, { marginBottom: 16 })}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", marginBottom: 10 }}>Posts by Platform</div>
-              {Object.keys(byPlatform).map(function(p) {
-                var pc = platColor(p);
-                var pct = Math.round((byPlatform[p] / postedLog.length) * 100);
-                return (
-                  <div key={p} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "#0f172a", minWidth: 80 }}>{p}</span>
-                    <div style={{ flex: 1, background: "#f1f5f9", borderRadius: 4, height: 20 }}>
-                      <div style={{ width: pct + "%", background: pc.border, borderRadius: 4, height: 20, minWidth: 20 }}></div>
-                    </div>
-                    <span style={{ fontSize: 12, color: "#64748b", minWidth: 30 }}>{byPlatform[p]}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
-
-          {/* By Pillar */}
-          {Object.keys(byPillar).length > 0 ? (
-            <div style={Object.assign({}, card, { marginBottom: 16 })}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", marginBottom: 10 }}>Posts by Content Pillar</div>
-              {Object.keys(byPillar).map(function(p) {
-                var pct = Math.round((byPillar[p] / postedLog.length) * 100);
-                return (
-                  <div key={p} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "#0f172a", minWidth: 120 }}>{p}</span>
-                    <div style={{ flex: 1, background: "#f1f5f9", borderRadius: 4, height: 20 }}>
-                      <div style={{ width: pct + "%", background: pillarColor(p), borderRadius: 4, height: 20, minWidth: 20 }}></div>
-                    </div>
-                    <span style={{ fontSize: 12, color: "#64748b", minWidth: 30 }}>{byPillar[p]}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
-
-          {/* Posted Log */}
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", marginBottom: 10 }}>Recent Activity</div>
-          {postedLog.length === 0 ? <div style={Object.assign({}, card, { textAlign: "center", color: "#94a3b8", fontSize: 13, padding: 30 })}>No posts tracked yet. Mark posts as "Posted" from the Calendar tab.</div> : null}
-          {postedLog.slice().reverse().slice(0, 20).map(function(p, i) {
-            var pc = platColor(p.platform);
-            return (
-              <div key={i} style={Object.assign({}, card, { padding: 12, display: "flex", gap: 10, alignItems: "start" })}>
-                <span style={{ width: 24, height: 24, borderRadius: 6, background: pc.bg, border: "1px solid " + pc.border, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: pc.border, flexShrink: 0 }}>{pc.icon}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, color: "#1e293b", lineHeight: 1.4 }}>{p.content && p.content.length > 100 ? p.content.substring(0, 100) + "..." : p.content}</div>
-                  <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 4 }}>{p.postedAt}{p.pillar ? " | " + p.pillar : ""}</div>
-                </div>
+          <div style={Object.assign({}, sCard, { flex: 1, minWidth: 140, textAlign: "center", padding: 24 })}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: C.green }}>{savedPosts.length}</div>
+            <div style={{ fontSize: 12, color: C.textP + "80" }}>Posts Saved</div>
+          </div>
+          <div style={Object.assign({}, sCard, { flex: 1, minWidth: 140, textAlign: "center", padding: 24 })}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: C.blue }}>{Object.keys(byPlat).length}</div>
+            <div style={{ fontSize: 12, color: C.textP + "80" }}>Platforms Active</div>
+          </div>
+        </div>
+        {Object.keys(byPlat).length > 0 ? (<div style={Object.assign({}, sCard, { marginBottom: 16 })}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: C.textH, marginBottom: 12 }}>Posts by Platform</div>
+          {Object.keys(byPlat).map(function(p) {
+            var pc = platInfo(p); var pct = Math.round((byPlat[p] / postedLog.length) * 100);
+            return (<div key={p} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: C.textH, minWidth: 80 }}>{p}</span>
+              <div style={{ flex: 1, background: C.purpleBg, borderRadius: 6, height: 22 }}>
+                <div style={{ width: pct + "%", background: pc.border, borderRadius: 6, height: 22, minWidth: 20 }}></div>
               </div>
-            );
+              <span style={{ fontSize: 12, color: C.textP + "80", minWidth: 30 }}>{byPlat[p]}</span>
+            </div>);
           })}
-        </div>
-      </div>
-    );
-  }
-
-  return <div style={page}>{header}{tabBar}</div>;
-}  function doGenerateForTrend(trend) {
-    setGenLoading(true);
-    setGenPosts(null);
-    fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic: trend.title + " - " + trend.summary })
-    }).then(function(r) { return r.json(); }).then(function(d) {
-      if (d.posts) { setGenPosts(d.posts); setTab("drafts"); fetchData(); }
-      else if (d.error) { setErr(d.error); }
-      setGenLoading(false);
-    }).catch(function() { setErr("Generation failed"); setGenLoading(false); });
-  }
-
-  function copyText(text, idx) {
-    navigator.clipboard.writeText(text).then(function() {
-      var o = {}; o[idx] = true;
-      setCopied(function(p) { return Object.assign({}, p, o); });
-      setTimeout(function() { var o2 = {}; o2[idx] = false; setCopied(function(p) { return Object.assign({}, p, o2); }); }, 2000);
-    });
-  }
-
-  function heatColor(h) {
-    if (h === "hot") return { bg: "#fee2e2", color: "#dc2626", label: "HOT" };
-    if (h === "rising") return { bg: "#fef9c3", color: "#ca8a04", label: "RISING" };
-    return { bg: "#ffedd5", color: "#ea580c", label: "WARM" };
-  }
-
-  function platColor(p) {
-    var k = (p || "").toLowerCase();
-    if (k.indexOf("twitter") >= 0 || k.indexOf("x ") >= 0 || k === "x") return { border: "#1d9bf0", bg: "#f0f9ff", icon: "X", label: "X / Twitter" };
-    if (k.indexOf("linkedin") >= 0) return { border: "#0a66c2", bg: "#f0f4ff", icon: "in", label: "LinkedIn" };
-    if (k.indexOf("telegram") >= 0) return { border: "#229ed9", bg: "#f0faff", icon: "TG", label: "Telegram" };
-    return { border: "#e1306c", bg: "#fdf2f8", icon: "IG", label: "Instagram" };
-  }
-
-  var headerStyle = { background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 };
-  var logoStyle = { width: 38, height: 38, borderRadius: 10, background: "linear-gradient(135deg, #0052ff, #00c6ff)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 16, color: "#fff" };
-  var ctStyle = { maxWidth: 980, margin: "0 auto", padding: "24px 20px" };
-  var cardStyle = { background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, padding: 18, marginBottom: 12 };
-  var btnBlue = { padding: "8px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "#fff", background: "#0052ff", border: "none", cursor: "pointer" };
-  var btnGhost = { padding: "7px 14px", borderRadius: 8, fontSize: 12, fontWeight: 500, color: "#64748b", background: "#fff", border: "1px solid #e5e7eb", cursor: "pointer" };
-
-  var header = (
-    <div style={headerStyle}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={logoStyle}>X</div>
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#0f172a" }}>XBO.com Content Agent</div>
-          <div style={{ fontSize: 11, color: "#64748b" }}>
-            <span style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: data && data.lastUpdate ? "#22c55e" : "#94a3b8", marginRight: 5, verticalAlign: "middle" }}></span>
-            {data && data.lastUpdate ? "Updated " + new Date(data.lastUpdate).toLocaleTimeString() : "Not scanned yet"}
-          </div>
-        </div>
-      </div>
-      <button disabled={loading} onClick={function() { doRefresh("all"); }} style={Object.assign({}, btnBlue, loading ? { opacity: 0.5, cursor: "not-allowed" } : {})}>
-        {loading && loadWhat === "all" ? "Scanning..." : "Refresh All"}
-      </button>
-    </div>
-  );
-
-  var tabBar = (
-    <div style={{ display: "flex", gap: 2, background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "0 24px" }}>
-      {TABS.map(function(t) {
-        var active = tab === t.id;
-        return (
-          <div key={t.id} onClick={function() { setTab(t.id); }} style={{
-            padding: "12px 20px", fontSize: 13, fontWeight: active ? 600 : 500,
-            color: active ? "#0052ff" : "#64748b",
-            borderBottom: active ? "2px solid #0052ff" : "2px solid transparent",
-            cursor: "pointer"
-          }}>{t.label}</div>
-        );
-      })}
-    </div>
-  );
-
-  var errBox = err ? (
-    <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, padding: 14, fontSize: 13, color: "#dc2626", margin: "16px 0" }}>{err}</div>
-  ) : null;
-
-  // ===== BRIEFING =====
-  if (tab === "briefing") {
-    var trends = data && data.trends ? data.trends : [];
-    return (
-      <div style={{ minHeight: "100vh", background: "#f8f9fb" }}>
-        {header}{tabBar}
-        <div style={ctStyle}>
-          {data && data.lastUpdate ? (
-            <div style={{ background: "linear-gradient(135deg, #0052ff, #00c6ff)", borderRadius: 14, padding: "20px 24px", marginBottom: 24, color: "#fff" }}>
-              <div style={{ fontSize: 12, fontWeight: 500, opacity: 0.8, marginBottom: 4 }}>MARKET MOOD</div>
-              <div style={{ fontSize: 16, fontWeight: 600 }}>{data.market_mood || "Analyzing..."}</div>
-            </div>
-          ) : (
-            <div style={Object.assign({}, cardStyle, { padding: 40, textAlign: "center" })}>
-              <div style={{ fontSize: 18, fontWeight: 600, color: "#0f172a", marginBottom: 8 }}>Welcome to your Content Command Center</div>
-              <div style={{ fontSize: 14, color: "#64748b", marginBottom: 20 }}>Click Refresh All to scan crypto news, trends, and competitor activity.</div>
-              <button disabled={loading} onClick={function() { doRefresh("all"); }} style={btnBlue}>
-                {loading ? "Scanning..." : "Run First Scan"}
-              </button>
-            </div>
-          )}
-          {errBox}
-          {trends.length > 0 && (
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", marginBottom: 12 }}>Trending Now ({trends.length})</div>
-              {trends.map(function(t, i) {
-                var hc = heatColor(t.heat);
-                var tags = t.hashtags || [];
-                return (
-                  <div key={i} style={cardStyle}>
-                    <div style={{ display: "flex", alignItems: "start", justifyContent: "space-between", gap: 12 }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: hc.bg, color: hc.color }}>{hc.label}</span>
-                          <span style={{ fontSize: 11, color: "#94a3b8" }}>{t.category}</span>
-                          {t.source ? <span style={{ fontSize: 10, color: "#cbd5e1" }}>via {t.source}</span> : null}
-                        </div>
-                        <div style={{ fontSize: 15, fontWeight: 600, color: "#0f172a", marginBottom: 4 }}>{t.title}</div>
-                        <div style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5 }}>{t.summary}</div>
-                        {tags.length > 0 ? (
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
-                            {tags.map(function(h, j) { return <span key={j} style={{ fontSize: 11, color: "#0052ff", background: "#eff6ff", padding: "2px 6px", borderRadius: 4 }}>#{h}</span>; })}
-                          </div>
-                        ) : null}
-                      </div>
-                      <button disabled={genLoading} onClick={function() { doGenerateForTrend(t); }} style={{ padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600, color: "#0052ff", background: "#eff6ff", border: "1px solid #bfdbfe", cursor: genLoading ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}>
-                        {genLoading ? "..." : "Generate Posts"}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // ===== DRAFTS =====
-  if (tab === "drafts") {
-    var allPosts = genPosts || (data && data.posts) || [];
-    var platforms = ["x", "linkedin", "telegram", "instagram"];
-    return (
-      <div style={{ minHeight: "100vh", background: "#f8f9fb" }}>
-        {header}{tabBar}
-        <div style={ctStyle}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>Content Drafts ({allPosts.length})</div>
-            <button disabled={loading} onClick={function() { doRefresh("posts"); }} style={btnGhost}>
-              {loading && loadWhat === "posts" ? "Generating..." : "Regenerate All"}
-            </button>
-          </div>
-          {errBox}
-          {allPosts.length === 0 ? (
-            <div style={Object.assign({}, cardStyle, { padding: 30, textAlign: "center", color: "#94a3b8", fontSize: 13 })}>
-              No drafts yet. Go to Briefing and click Generate Posts on a trend.
-            </div>
-          ) : null}
-          {platforms.map(function(plat) {
-            var pp = allPosts.filter(function(p) { return (p.platform || "").toLowerCase().indexOf(plat) >= 0; });
-            if (pp.length === 0) return null;
-            var pc = platColor(plat);
-            return (
-              <div key={plat} style={{ marginBottom: 20 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ width: 28, height: 28, borderRadius: 8, background: pc.bg, border: "1px solid " + pc.border, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: pc.border }}>{pc.icon}</span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{pc.label}</span>
-                </div>
-                {pp.map(function(post, i) {
-                  var idx = plat + "-" + i;
-                  var isCp = copied[idx] === true;
-                  return (
-                    <div key={idx} style={{ background: "#fff", borderLeft: "3px solid " + pc.border, borderRadius: "0 10px 10px 0", border: "1px solid #e5e7eb", borderLeftColor: pc.border, borderLeftWidth: 3, padding: 16, marginBottom: 8 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                        <span style={{ fontSize: 11, fontWeight: 500, color: "#94a3b8", background: "#f1f5f9", padding: "2px 8px", borderRadius: 4 }}>{post.tone}</span>
-                        <button onClick={function() { copyText(post.content, idx); }} style={{ fontSize: 11, padding: "5px 12px", borderRadius: 6, fontWeight: 600, cursor: "pointer", background: isCp ? "#059669" : "#fff", color: isCp ? "#fff" : "#0f172a", border: isCp ? "1px solid #059669" : "1px solid #e5e7eb" }}>
-                          {isCp ? "Copied!" : "Copy"}
-                        </button>
-                      </div>
-                      <div style={{ fontSize: 14, color: "#1e293b", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{post.content}</div>
-                      {(post.hashtags || []).length > 0 ? (
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
-                          {post.hashtags.map(function(h, j) { return <span key={j} style={{ fontSize: 11, color: "#0052ff", background: "#eff6ff", padding: "2px 6px", borderRadius: 4 }}>#{h}</span>; })}
-                        </div>
-                      ) : null}
-                      {post.engagement_tip ? (
-                        <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 8, fontStyle: "italic", background: "#f8fafc", padding: "6px 10px", borderRadius: 6 }}>Tip: {post.engagement_tip}</div>
-                      ) : null}
-                    </div>
-                  );
-                })}
+        </div>) : null}
+        {Object.keys(byPil).length > 0 ? (<div style={Object.assign({}, sCard, { marginBottom: 16 })}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: C.textH, marginBottom: 12 }}>Posts by Pillar</div>
+          {Object.keys(byPil).map(function(p) {
+            var pct = Math.round((byPil[p] / postedLog.length) * 100);
+            return (<div key={p} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: C.textH, minWidth: 120 }}>{p}</span>
+              <div style={{ flex: 1, background: C.purpleBg, borderRadius: 6, height: 22 }}>
+                <div style={{ width: pct + "%", background: pillarColors[p] || C.grey, borderRadius: 6, height: 22, minWidth: 20 }}></div>
               </div>
-            );
+              <span style={{ fontSize: 12, color: C.textP + "80", minWidth: 30 }}>{byPil[p]}</span>
+            </div>);
           })}
-        </div>
-      </div>
-    );
-  }
-
-  // ===== COMPETITORS =====
-  if (tab === "competitors") {
-    var comps = (data && data.competitors) || [];
-    return (
-      <div style={{ minHeight: "100vh", background: "#f8f9fb" }}>
-        {header}{tabBar}
-        <div style={ctStyle}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>Competitor Intelligence</div>
-            <button disabled={loading} onClick={function() { doRefresh("competitors"); }} style={btnGhost}>
-              {loading && loadWhat === "competitors" ? "Analyzing..." : "Refresh Competitors"}
-            </button>
-          </div>
-          {errBox}
-          {comps.length === 0 ? (
-            <div style={Object.assign({}, cardStyle, { padding: 30, textAlign: "center", color: "#94a3b8", fontSize: 13 })}>
-              No competitor data yet. Click Refresh Competitors to analyze.
+        </div>) : null}
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.textH, marginBottom: 10 }}>Recent Activity</div>
+        {postedLog.length === 0 ? <div style={Object.assign({}, sCard, { textAlign: "center", color: C.textP + "70", fontSize: 13, padding: 30 })}>Mark posts as Posted from Calendar.</div> : null}
+        {postedLog.slice().reverse().slice(0, 20).map(function(p, i) {
+          var pc = platInfo(p.platform);
+          return (<div key={i} style={Object.assign({}, sCard, { padding: 14, display: "flex", gap: 10, alignItems: "start" })}>
+            <span style={{ width: 26, height: 26, borderRadius: 8, background: pc.bg, border: "1px solid " + pc.border, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: pc.border, flexShrink: 0 }}>{pc.icon}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, color: C.textP, lineHeight: 1.4 }}>{p.content && p.content.length > 100 ? p.content.substring(0, 100) + "..." : p.content}</div>
+              <div style={{ fontSize: 10, color: C.textP + "60", marginTop: 4 }}>{p.postedAt}{p.pillar ? " | " + p.pillar : ""}</div>
             </div>
-          ) : null}
-          {comps.map(function(c, i) {
-            return (
-              <div key={i} style={cardStyle}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#0f172a", marginBottom: 10 }}>{c.name}</div>
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", marginBottom: 2 }}>RECENT MOVES</div>
-                  <div style={{ fontSize: 13, color: "#475569", lineHeight: 1.5 }}>{c.recent_moves}</div>
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", marginBottom: 2 }}>CONTENT STYLE</div>
-                  <div style={{ fontSize: 13, color: "#475569", lineHeight: 1.5 }}>{c.content_style}</div>
-                </div>
-                <div style={{ background: "#eff6ff", borderRadius: 8, padding: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "#0052ff", marginBottom: 2 }}>OPPORTUNITY FOR XBO</div>
-                  <div style={{ fontSize: 13, color: "#1e40af", lineHeight: 1.5 }}>{c.opportunity}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+          </div>);
+        })}
+      </div></div>
     );
   }
 
-  // ===== CALENDAR =====
-  if (tab === "calendar") {
-    var calPosts = (data && data.calendar) || [];
-    return (
-      <div style={{ minHeight: "100vh", background: "#f8f9fb" }}>
-        {header}{tabBar}
-        <div style={ctStyle}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>Content Calendar</div>
-            <button disabled={loading} onClick={function() { doRefresh("calendar"); }} style={btnGhost}>
-              {loading && loadWhat === "calendar" ? "Planning..." : "Generate Calendar"}
-            </button>
-          </div>
-          {errBox}
-          {calPosts.length === 0 ? (
-            <div style={Object.assign({}, cardStyle, { padding: 30, textAlign: "center", color: "#94a3b8", fontSize: 13 })}>
-              No calendar yet. Click Generate Calendar to plan today.
-            </div>
-          ) : null}
-          {calPosts.map(function(p, i) {
-            var pc = platColor(p.platform || "");
-            var catColors = {
-              trending: { bg: "#fef2f2", color: "#dc2626" },
-              educational: { bg: "#eff6ff", color: "#2563eb" },
-              product: { bg: "#f0fdf4", color: "#16a34a" },
-              engagement: { bg: "#fefce8", color: "#ca8a04" },
-              community: { bg: "#faf5ff", color: "#9333ea" }
-            };
-            var cc = catColors[p.category] || { bg: "#f1f5f9", color: "#64748b" };
-            return (
-              <div key={i} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, padding: 16, marginBottom: 8, display: "flex", gap: 14, alignItems: "start" }}>
-                <div style={{ minWidth: 60, textAlign: "center" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>{p.time || "--"}</div>
-                  <div style={{ width: 26, height: 26, borderRadius: 6, background: pc.bg, border: "1px solid " + pc.border, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: pc.border, margin: "4px auto 0" }}>{pc.icon}</div>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
-                    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 6px", borderRadius: 4, background: cc.bg, color: cc.color }}>{(p.category || "").toUpperCase()}</span>
-                    <span style={{ fontSize: 10, color: "#94a3b8" }}>{p.tone}</span>
-                  </div>
-                  <div style={{ fontSize: 13, color: "#1e293b", lineHeight: 1.5 }}>{p.content}</div>
-                </div>
-                <button onClick={function() { copyText(p.content, "cal-" + i); }} style={{ fontSize: 10, padding: "4px 10px", borderRadius: 6, cursor: "pointer", whiteSpace: "nowrap", background: copied["cal-" + i] ? "#059669" : "#fff", color: copied["cal-" + i] ? "#fff" : "#64748b", border: copied["cal-" + i] ? "1px solid #059669" : "1px solid #e5e7eb", fontWeight: 600 }}>
-                  {copied["cal-" + i] ? "Copied!" : "Copy"}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  return <div style={{ minHeight: "100vh", background: "#f8f9fb" }}>{header}{tabBar}</div>;
+  return <div style={sPage}>{header}{tabBar}</div>;
 }
