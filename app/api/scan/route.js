@@ -6,54 +6,28 @@ export var maxDuration = 60;
 export function GET(request) {
   var url = new URL(request.url);
   var section = url.searchParams.get("section") || "all";
+  var platforms = url.searchParams.get("platforms");
+  var platArr = platforms ? platforms.split(",") : null;
 
-  function doAll() {
-    return researchTrends().then(function(trendData) {
-      updateTrends(trendData);
-      return new Promise(function(r) { setTimeout(r, 3000); }).then(function() {
-        return generatePosts(trendData.trends || []);
-      });
-    }).then(function(postData) {
-      updatePosts(postData.posts || []);
-      return { ok: true, time: new Date().toISOString() };
-    });
+  if (section === "competitors") {
+    return analyzeCompetitors().then(function(d) { updateCompetitors(d.competitors || []); return Response.json({ ok: true }); })
+    .catch(function(e) { return Response.json({ ok: false, error: e.message }, { status: 500 }); });
   }
-
-  function doCompetitors() {
-    return analyzeCompetitors().then(function(compData) {
-      updateCompetitors(compData.competitors || []);
-      return { ok: true, time: new Date().toISOString() };
-    });
+  if (section === "calendar") {
+    return generateCalendar(platArr).then(function(d) { updateCalendar(d.posts || []); return Response.json({ ok: true }); })
+    .catch(function(e) { return Response.json({ ok: false, error: e.message }, { status: 500 }); });
   }
-
-  function doCalendar() {
-    var platforms = ["X Twitter", "LinkedIn", "Telegram", "Instagram"];
-    return generateCalendar(platforms).then(function(calData) {
-      updateCalendar(calData.posts || []);
-      return { ok: true, time: new Date().toISOString() };
-    });
-  }
-
-  function doPosts() {
+  if (section === "posts") {
     var store = getStore();
-    if (store.trends.length === 0) {
-      return Promise.resolve({ ok: false, error: "No trends yet. Refresh All first." });
-    }
-    return generatePosts(store.trends).then(function(postData) {
-      updatePosts(postData.posts || []);
-      return { ok: true, time: new Date().toISOString() };
-    });
+    if (store.trends.length === 0) return Promise.resolve(Response.json({ ok: false, error: "No trends yet." }));
+    return generatePosts(store.trends, platArr).then(function(d) { updatePosts(d.posts || []); return Response.json({ ok: true }); })
+    .catch(function(e) { return Response.json({ ok: false, error: e.message }, { status: 500 }); });
   }
-
-  var work;
-  if (section === "competitors") work = doCompetitors();
-  else if (section === "calendar") work = doCalendar();
-  else if (section === "posts") work = doPosts();
-  else work = doAll();
-
-  return work.then(function(result) {
-    return Response.json(result);
-  }).catch(function(err) {
-    return Response.json({ ok: false, error: err.message }, { status: 500 });
-  });
+  return researchTrends().then(function(td) {
+    updateTrends(td);
+    return new Promise(function(r) { setTimeout(r, 3000); }).then(function() { return generatePosts(td.trends || [], platArr); });
+  }).then(function(pd) {
+    updatePosts(pd.posts || []);
+    return Response.json({ ok: true });
+  }).catch(function(e) { return Response.json({ ok: false, error: e.message }, { status: 500 }); });
 }
