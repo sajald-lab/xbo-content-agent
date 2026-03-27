@@ -56,18 +56,25 @@ var TEMPLATES = [
     prompt: "Create 5 X posts for XBO.com this week. Mix: market commentary, product education, community, trending news. Under 280 chars each, hook-first, clear CTA."
   },
   {
-    id: "feature_launch",
-    name: "Feature Launch Pack",
-    desc: "Social + push notifications for a new feature",
-    icon: "🚀",
-    prompt: "Create launch content for XBO.com: 2 X posts, 2 LinkedIn posts, 2 Telegram messages, and 2 push notifications. Announce the feature, explain value, drive action."
+    id: "daily_idea",
+    name: "Daily Post Idea",
+    desc: "1 quick post based on today's crypto trends",
+    icon: "💡",
+    prompt: "Give me 1 post idea for X based on what's trending in crypto today. Include the full draft. Under 280 chars, hook-first, include XBO.com CTA."
   },
   {
-    id: "earn_promo",
-    name: "Earn Promotion",
-    desc: "Promote XBO Earn rates across platforms",
-    icon: "%",
-    prompt: "Create promotional content for XBO Earn: up to 15% APR on stablecoins, daily compounding, flexible terms, custodial protection by Fireblocks. Include specific numbers and CTA."
+    id: "product_highlight",
+    name: "Product Highlight",
+    desc: "Spotlight one XBO product with key benefit",
+    icon: "📦",
+    prompt: "Pick one XBO.com product (rotate between Exchange, Earn, Futures, CryptoPayX, XBO Card) and create 1 post per platform explaining its key benefit. Use specific numbers. Include CTA."
+  },
+  {
+    id: "engagement",
+    name: "Engagement Post",
+    desc: "Poll, hot take, or question to drive replies",
+    icon: "🔥",
+    prompt: "Create a community engagement post for X and Telegram: a poll, hot take, or question that drives replies. Keep it crypto-relevant and on-brand for XBO.com. Casual tone."
   },
   {
     id: "event_reaction",
@@ -84,11 +91,11 @@ var TEMPLATES = [
     prompt: "Create content positioning XBO.com favorably. Focus on: EU regulation, LATAM/football, better affiliate rates, award-winning CryptoPayX. Don't name competitors."
   },
   {
-    id: "argentina",
-    name: "Partnership Spotlight",
-    desc: "Argentina Football Team content",
-    icon: "⚽",
-    prompt: "Create content celebrating XBO.com's Argentina National Football Team sponsorship. Connect sports passion with crypto. Target LATAM audience."
+    id: "push_notif",
+    name: "Push Notifications",
+    desc: "3 push notification variants to drive app opens",
+    icon: "📲",
+    prompt: "Write 3 push notification variants for XBO.com app. Each needs a title (max 50 chars) and body (max 120 chars). Focus on urgency or value. Clear CTA to open the app."
   }
 ];
 
@@ -2008,55 +2015,30 @@ export default function App() {
             </div>
           ) : null}
 
-          {/* Source Library */}
-          <div style={Object.assign({}, sK, { marginTop: 16 })}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: C.th, marginBottom: 10 }}>Source Library</div>
-
-            {Object.keys(RESEARCH_SOURCES).map(function (cat) {
-              return (
-                <div key={cat} style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: C.purple, marginBottom: 4 }}>{cat}</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                    {RESEARCH_SOURCES[cat].map(function (s) {
-                      return (
-                        <button key={s} onClick={function () { setResQ(s); }} style={Object.assign({}, sBs, { fontSize: 10 })}>
-                          {s}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Custom Sources */}
-            {customSrc.length > 0 ? (
-              <div style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: C.green, marginBottom: 4 }}>Custom Sources</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                  {customSrc.map(function (s, i) {
-                    return (
-                      <button key={i} onClick={function () { setResQ(s); }} style={Object.assign({}, sBs, { fontSize: 10, color: C.green, borderColor: C.green + "50" })}>
-                        {s}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : null}
-
-            {/* Add custom source */}
-            <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-              <input
-                value={csIn}
-                onChange={function (e) { setCsIn(e.target.value); }}
-                onKeyDown={function (e) { if (e.key === "Enter") addCustomSrc(); }}
-                placeholder="Add source (topic, link, @account...)"
-                style={{ flex: 1, border: "1px solid " + C.p4, borderRadius: 8, padding: "8px 10px", fontSize: 12, fontFamily: "inherit", color: C.tp }}
-              />
-              <button onClick={addCustomSrc} style={Object.assign({}, sBG, { fontSize: 11 })}>Add</button>
+          {/* Quick Research Ideas */}
+          {!resFin ? (
+            <div style={Object.assign({}, sK, { marginTop: 16 })}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.th, marginBottom: 8 }}>Quick Research Ideas</div>
+              {[
+                "Binance latest marketing",
+                "Coinbase social strategy",
+                "OKX latest campaign",
+                "Bitcoin ETF institutional flows",
+                "Crypto regulation EU 2026",
+                "Solana ecosystem growth",
+                "Stablecoin adoption trends",
+                "LATAM crypto market"
+              ].map(function (q) {
+                return (
+                  <button
+                    key={q}
+                    onClick={function () { setResQ(q); }}
+                    style={Object.assign({}, sBG, { marginRight: 6, marginBottom: 6, fontSize: 11 })}
+                  >{q}</button>
+                );
+              })}
             </div>
-          </div>
+          ) : null}
 
         </div>
         {floatingBtns}
