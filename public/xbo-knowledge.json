@@ -1,0 +1,311 @@
+{
+  "company": {
+    "name": "XBO.com",
+    "tagline": "Cryptocurrency Exchange to Buy & Sell Crypto",
+    "mission": "Empower people through crypto. Make digital currencies accessible to everyone.",
+    "founded": 2022,
+    "registered": "Isle of Man (CLICKJOINT B.V., Curacao)",
+    "hq": "European Union",
+    "website": "https://xbo.com",
+    "social": {
+      "x": "https://x.com/XboOfficial",
+      "linkedin": "https://linkedin.com/company/xbo-com"
+    }
+  },
+  "products": {
+    "exchange": {
+      "name": "Crypto Exchange",
+      "description": "Instant swaps: fiat to crypto, crypto to crypto, crypto to fiat. No hidden commissions.",
+      "features": [
+        "Up to 1% cashback depending on loyalty tier",
+        "100+ cryptocurrencies supported",
+        "Fiat on/off ramp via credit card and bank transfer",
+        "Free crypto deposits"
+      ],
+      "supported_cryptos": ["BTC", "ETH", "SOL", "BNB", "USDT", "USDC", "XRP", "TON", "DOGE", "ADA", "TRX", "AVAX", "and 90+ more"],
+      "cta": "Start trading on XBO.com"
+    },
+    "spot_trading": {
+      "name": "Spot Trading",
+      "description": "Market and limit orders for real-time trading. Profit from price fluctuations.",
+      "features": [
+        "267+ trading pairs",
+        "Real-time market and limit orders",
+        "Advanced charting tools",
+        "Mobile-optimized trading"
+      ],
+      "cta": "Trade spot on XBO.com"
+    },
+    "futures_trading": {
+      "name": "Futures Trading",
+      "description": "Trade on price shifts with up to 100x leverage. Long and short positions.",
+      "features": [
+        "Up to 100x leverage",
+        "100+ assets available for futures",
+        "Long and short positions",
+        "Advanced risk management tools"
+      ],
+      "risk_warning": "Futures trading involves significant risk. Leverage amplifies both gains and losses. Please ensure you fully understand the risks before trading.",
+      "cta": "Trade futures on XBO.com"
+    },
+    "earn": {
+      "name": "XBO Earn",
+      "description": "Earn up to 15% APR on crypto and stablecoins. Daily compounding interest.",
+      "features": [
+        "Up to 15% APR",
+        "Flexible terms: 1, 7, 30, or 90 days",
+        "Daily compounding interest",
+        "Supported assets: USDT, ETH, SOL, MATIC, and more",
+        "Set duration options: 1, 3, or 12 months for higher rates",
+        "Real-time risk engine and strict collateralization",
+        "Custodial insurance via Fireblocks"
+      ],
+      "key_selling_points": [
+        "Leading rates in the market",
+        "Uninterrupted access to funds on flex terms",
+        "Automatically compounded daily",
+        "Custodial protection by Fireblocks"
+      ],
+      "cta": "Start earning on XBO.com"
+    },
+    "xbo_token": {
+      "name": "$XBO Token",
+      "description": "Native utility token of the XBO.com ecosystem. Powers transactions, rewards, and exclusive access.",
+      "features": [
+        "Reduced trading fees",
+        "Loyalty rewards",
+        "Competitive staking yields",
+        "Exclusive platform feature access"
+      ],
+      "contract_address": "0x167e6fcd728cdd00d012d8862934c2c333cb0839",
+      "blockchain": "Ethereum",
+      "launched": "August 18, 2025",
+      "cta": "Explore $XBO on XBO.com"
+    },
+    "xbo_card": {
+      "name": "XBO Card",
+      "description": "Spend crypto globally with instant fiat conversion. Virtual card integrated with Apple Pay and Google Pay.",
+      "features": [
+        "Virtual card",
+        "Apple Pay and Google Pay integration",
+        "Instant crypto-to-fiat conversion",
+        "Unlimited virtual and physical cards for corporate clients"
+      ],
+      "cta": "Get your XBO Card"
+    },
+    "emoney": {
+      "name": "XBO.emoney",
+      "description": "EU-regulated Electronic Money Institution product. IBAN accounts, EUR/GBP transfers, SEPA access.",
+      "features": [
+        "Personal and business IBAN accounts",
+        "EUR and GBP support",
+        "SEPA and SWIFT transfers",
+        "EU EMI licensed",
+        "Send and receive fiat payments",
+        "Card issuance capability"
+      ],
+      "regulatory_status": "EU-regulated EMI (Electronic Money Institution)",
+      "cta": "Open your XBO.emoney account"
+    },
+    "cryptopayx": {
+      "name": "CryptoPayX",
+      "description": "Crypto payment processing for businesses. Accept 100+ cryptocurrencies with instant fiat settlement.",
+      "features": [
+        "Accept 100+ cryptocurrencies",
+        "Instant settlements in EUR, USD, GBP",
+        "Fixed Rate feature — zero volatility",
+        "No chargebacks",
+        "Payment links generation",
+        "Dedicated wallet per client option",
+        "Auto-detect underpayments with follow-up requests",
+        "Secure refund processing in original crypto",
+        "Real-time dashboard for transaction tracking",
+        "Compatible with all crypto wallets",
+        "Easy API integration"
+      ],
+      "target_segments": ["FinTech", "iGaming", "e-commerce", "digital services"],
+      "awards": ["Best Crypto Payment Gateway — UF AWARDS Global 2025"],
+      "cta": "Get started with CryptoPayX"
+    },
+    "corporate": {
+      "name": "XBO for Corporates",
+      "description": "Institutional-grade crypto services for businesses.",
+      "features": [
+        "Instant and unlimited withdrawals",
+        "Competitive rates and fees",
+        "High liquidity",
+        "High-grade security",
+        "Corporate API",
+        "Dedicated SEPA and IBAN accounts",
+        "Unlimited virtual and physical card issuance"
+      ],
+      "cta": "Explore XBO Corporate at xbo.com/corporate"
+    },
+    "private_clients": {
+      "name": "Private Clients",
+      "description": "Personalized onboarding and strategic planning for high-net-worth individuals.",
+      "features": [
+        "Dedicated account management",
+        "Strategic optimization of XBO offerings",
+        "Personalized onboarding"
+      ],
+      "cta": "Contact XBO Private Clients"
+    }
+  },
+  "loyalty_program": {
+    "description": "Tiered loyalty program. Collect XP for actions, level up your tier, unlock better conditions.",
+    "benefits": ["Cashback up to 1%", "Reduced fees", "Exclusive rewards", "Promo challenges with crypto rewards"],
+    "mechanic": "Earn XP for trading, exchanging, and completing challenges in the Reward Center."
+  },
+  "security": {
+    "infrastructure": ["AWS hosting", "Cloudflare protection", "Fireblocks custody", "Ledger integration", "Fugu technology", "Elliptic compliance", "Muinmos onboarding"],
+    "certifications": ["CCSS Level 3", "PCI DSS", "SOC 2 Type I & II", "SSL protocols"],
+    "compliance": ["AML", "CTF", "GDPR", "DPA", "MiCA alignment"],
+    "features": [
+      "Two-factor authentication",
+      "Withdrawal confirmations",
+      "Address whitelisting",
+      "AI-driven transaction monitoring",
+      "Bank-grade encryption",
+      "24/7 dedicated support team"
+    ]
+  },
+  "regulatory": {
+    "status": "Licensed and regulated in the European Union and other jurisdictions",
+    "frameworks": ["MiCA alignment", "EMD2", "PSD2"],
+    "licenses": "Multiple EU regulatory licenses",
+    "restricted_jurisdictions": ["United States", "United Kingdom", "Iran", "Russia", "China"],
+    "disclaimers": {
+      "general": "The material presented is for general information purposes only and does not constitute investment advice, or a recommendation or solicitation to exchange, buy, sell, stake, or hold any cryptoasset, or to engage in any specific trading strategy.",
+      "risk": "The volatile and unpredictable nature of the crypto-asset markets can result in the loss of funds. Digital assets are complex instruments that involve a high level of risk. Please ensure that you fully understand the risks before entering into any transactions.",
+      "geographic": "Geographic restrictions may also apply. This information is not intended for distribution to, or use by, residents of certain countries or jurisdictions.",
+      "futures": "Futures trading involves significant risk. Leverage amplifies both gains and losses. You may lose more than your initial investment.",
+      "uk": "We do not hold a licence nor are registered in the United Kingdom, and do not actively offer services to UK residents."
+    }
+  },
+  "partnerships": {
+    "argentina_football": {
+      "partner": "Argentina National Football Team (AFA)",
+      "type": "Official Sponsorship",
+      "strategic_value": "Connecting with the passionate LATAM community. Strategic investment in one of the fastest-growing crypto markets globally.",
+      "content_angle": "Sports + crypto crossover. LATAM audience engagement. Football culture meets digital finance."
+    },
+    "security_partners": ["Fireblocks", "Ledger", "Elliptic", "Muinmos", "Hashlock"],
+    "infra_partners": ["AWS", "Cloudflare"]
+  },
+  "differentiators": [
+    "EU-regulated with MiCA alignment — trust and compliance advantage",
+    "Argentina Football Team sponsorship — unique LATAM/sports angle",
+    "Higher affiliate commission structure vs Binance — affiliates earn more per dollar traded",
+    "All-in-one platform: exchange, earn, card, payments, corporate, emoney",
+    "Award-winning CryptoPayX (Best Crypto Payment Gateway 2025)",
+    "Mobile-first design — built primarily for smartphones",
+    "Curated coin selection reviewed by analysts — no junk tokens",
+    "$XBO native token with real utility (fee discounts, staking, rewards)",
+    "24/7 dedicated support with fast resolution"
+  ],
+  "brand_voice": {
+    "tone": "Punchy, direct, human-sounding. Confident but not arrogant.",
+    "do": [
+      "Use short, clear sentences",
+      "Lead with value or hook",
+      "Use numbers and specifics (up to 15% APR, 100+ cryptos, 100x leverage)",
+      "Include clear CTA",
+      "Sound like a smart friend, not a corporate bot",
+      "Use active voice"
+    ],
+    "dont": [
+      "Use em dashes",
+      "Use AI-style phrasing (delve, landscape, tapestry, leverage as verb excessively)",
+      "Use hashtags on LinkedIn",
+      "Use excessive emojis (1-2 max per post)",
+      "Use jargon without explanation",
+      "Sound generic or interchangeable with any other exchange",
+      "Make unsubstantiated claims about returns or guarantees"
+    ],
+    "platform_rules": {
+      "x": {
+        "max_chars": 280,
+        "style": "Hook-first. Punchy. One core idea per post. Thread for complex topics.",
+        "hashtags": "1-2 max, only if relevant",
+        "cta": "Short, direct"
+      },
+      "linkedin": {
+        "max_chars": 3000,
+        "style": "Professional but not stiff. Insight-led. Question hooks work well. Paragraph breaks for readability.",
+        "hashtags": "None. Never use hashtags on LinkedIn.",
+        "cta": "Thought-provoking question or clear next step"
+      },
+      "instagram": {
+        "max_chars": 2200,
+        "style": "Visual-first caption. Hook in first line. Educational or aspirational. Carousel-friendly.",
+        "hashtags": "5-8 relevant hashtags at end of caption",
+        "cta": "Link in bio or engagement prompt"
+      },
+      "telegram": {
+        "max_chars": 4096,
+        "style": "Community-first. Casual, energetic. Polls and questions drive engagement. News alerts for breaking stories.",
+        "hashtags": "Minimal, 0-1",
+        "cta": "Direct link or community action (poll, prediction, discussion)"
+      }
+    },
+    "push_notification_rules": {
+      "title_max_chars": 50,
+      "body_max_chars": 120,
+      "style": "Ultra-concise. Action-oriented. Urgency or value hook. One clear CTA.",
+      "examples": [
+        {"title": "USDT Earn: Up to 15% APR", "body": "Put your stablecoins to work. Start earning daily interest now."},
+        {"title": "BTC just hit $90K", "body": "The market is moving. Open XBO.com to trade with up to 100x leverage."},
+        {"title": "New: XBO Card is live", "body": "Spend crypto anywhere with Apple Pay & Google Pay. Activate now."}
+      ]
+    }
+  },
+  "research_sources": {
+    "publications": [
+      "CoinDesk", "The Block", "CoinTelegraph", "Decrypt", "BeInCrypto",
+      "DL News", "Blockworks", "The Defiant", "Unchained", "CryptoSlate",
+      "Bitcoin Magazine", "Protos"
+    ],
+    "data_analytics": [
+      "Glassnode", "Dune Analytics", "DefiLlama", "Token Terminal",
+      "Messari", "Nansen", "CoinGecko", "CoinMarketCap"
+    ],
+    "x_news": ["@WuBlockchain", "@tier10k", "@DeItaone", "@unusual_whales", "@lookonchain", "@EmberCN", "@ai_9684xtpa", "@0xScope"],
+    "x_commentary": ["@ZachXBT", "@coaboroiu", "@AltcoinGordon", "@CryptoHayes", "@inversebrah", "@Rewkang", "@CryptoCobain", "@lightcrypto"],
+    "x_institutional": ["@BitMEXResearch", "@ellaboratecap", "@nic__carter", "@100trillionUSD"],
+    "x_regulatory": ["@EleanorTerrett", "@stephtoub", "@jabornahmad"],
+    "x_latam": ["@CryptoArgentina", "@BeInCryptoEs", "@CoinTelegraphES"]
+  },
+  "content_templates": {
+    "weekly_x_plan": {
+      "name": "Weekly X Content Plan",
+      "description": "Generate 5 posts for X covering the week: 1 market commentary, 1 product highlight, 1 community/meme, 1 educational, 1 news reaction.",
+      "prompt_prefix": "Create 5 X posts for XBO.com this week. Mix content pillars: market commentary, product education, community engagement, and trending news. Each post should be under 280 characters, hook-first, and include a clear CTA."
+    },
+    "feature_launch": {
+      "name": "New Feature Launch Pack",
+      "description": "Full content suite for a product launch: 2 social posts per platform + 2 push notifications.",
+      "prompt_prefix": "Create a launch content pack for XBO.com including: 2 X posts, 2 LinkedIn posts, 2 Instagram captions, 2 Telegram messages, and 2 push notifications. All content should announce the new feature, explain the value, and drive action."
+    },
+    "earn_promo": {
+      "name": "Earn Product Promotion",
+      "description": "Promote XBO Earn rates and benefits across platforms.",
+      "prompt_prefix": "Create promotional content for XBO Earn highlighting up to 15% APR on stablecoins, daily compounding, flexible terms, and custodial protection. Include specific numbers and a clear CTA to start earning."
+    },
+    "event_reaction": {
+      "name": "Market Event Reaction",
+      "description": "Quick-turn content reacting to breaking crypto news.",
+      "prompt_prefix": "Create reactive content for XBO.com responding to this market event. Be timely, add XBO's perspective, and include a relevant product CTA."
+    },
+    "competitor_response": {
+      "name": "Competitor Response",
+      "description": "Content that positions XBO against competitor moves.",
+      "prompt_prefix": "Create content that positions XBO.com favorably against this competitor development. Focus on XBO's differentiators: EU regulation, LATAM/football angle, better affiliate rates, award-winning CryptoPayX. Do not mention the competitor by name."
+    },
+    "partnership_spotlight": {
+      "name": "Partnership Spotlight",
+      "description": "Highlight XBO's Argentina Football Team partnership.",
+      "prompt_prefix": "Create content celebrating XBO.com's sponsorship of the Argentina National Football Team. Connect sports passion with crypto accessibility. Target LATAM audience."
+    }
+  }
+}
